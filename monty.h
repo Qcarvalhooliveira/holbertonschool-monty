@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <limits.h>
 #include <unistd.h>
+#include <ctype.h>
 
 int var_glob[2];
 
@@ -53,4 +54,5 @@ void _div(stack_t **stack, unsigned int line_number);
 void mul(stack_t **stack, unsigned int line_number);
 void mod(stack_t **stack, unsigned int line_number);
 void free_malloc(stack_t *head);
+int is_numeric(char *str);
 #endif
