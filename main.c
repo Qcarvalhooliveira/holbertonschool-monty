@@ -1,85 +1,87 @@
 #include "monty.h"
 
 /**
- *  *lines_check - check line to arguments
- *   *@buffer: contain all
- *    *@line_number: count to lines inside the file
- *     *Return: Tokens
- *      */
-
-char *lines_check(char *buffer, unsigned int line_number)
+ *  * main - Entry point for the monty interpreter.
+ *   *
+ *    * @argc: number of arguments
+ *     * @argv: array of arguments
+ *      *
+ *       * Return: EXIT_SUCCESS on success, EXIT_FAILURE on failure
+ *        */
+int main(int argc, char **argv)
 {
-	char *token = NULL, *num_t = NULL;
-	
-
-	token = strtok(buffer, " \t\n");
-	if (token == NULL)
-		return (NULL);
-	if (strcmp(token, "push") == 0)
-	{
-		num_t = strtok(NULL, " \t\n");
-		if (num_t == NULL || !is_numeric(num_t))
-		{
-			fprintf(stderr, "L%u: usage: push integer\n", line_number);
-			free(buffer);
-			var_glob[1] = 1;
-			return (NULL);
-		}
-		errno = 0;
-		long int val = strtol(num_t, NULL, 10);
-		if (errno == ERANGE || val < INT_MIN || val > INT_MAX)
-		{
-			fprintf(stderr, "L%u: integer out of range\n", line_number);
-			free(buffer);
-			var_glob[1] = 1;
-			return (NULL);
-		}
-		var_glob[0] = (int)val;
-	}
-	return (token);
-}
-
-/**
- *  *main - execute the monty interpreter
- *   *@argc: count number to arguments per line
- *    *@argv: array to arguments
- *     *Return: 0 if no exist or exit failure in case to error
- *      */
-
-int main(int argc, char *argv[])
-{
-	stack_t *stack = NULL;
 	FILE *file;
-	char *buffer = NULL, *command_f = NULL;
-	size_t size = 0;
+	char *buffer = NULL;
+	size_t bufsize = 0;
+	ssize_t read = 0;
+	char *command_f = NULL;
+	stack_t *stack = NULL;
 	unsigned int line_number = 0;
+	int operation_successful = 0;
+
+	var_glob[1] = 0;
 
 	if (argc != 2)
 	{
 		fprintf(stderr, "USAGE: monty file\n");
-		exit(EXIT_FAILURE);
+		return (EXIT_FAILURE);
 	}
+
 	file = fopen(argv[1], "r");
+
 	if (file == NULL)
 	{
 		fprintf(stderr, "Error: Can't open file %s\n", argv[1]);
-		exit(EXIT_FAILURE);
+		return (EXIT_FAILURE);
 	}
-	while (getline(&buffer, &size, file) != EOF)
+
+	while ((read = getline(&buffer, &bufsize, file)) != -1)
 	{
 		line_number++;
-		if (strlen(buffer) == 1 || strspn(buffer, " \t\n") == strlen(buffer))
+		command_f = strtok(buffer, "\n\t\r ");
+
+		if (command_f == NULL || command_f[0] == '#')
 			continue;
-		command_f = lines_check(buffer, line_number);
-		if (command_f == NULL)
-			break;
-		functions_monty(&stack, command_f, line_number);
+
+		if (strcmp(command_f, "push") == 0)
+		{
+			command_f = strtok(NULL, "\n\t\r ");
+
+			if (command_f == NULL || is_numeric(command_f) == 0)
+			{
+				fprintf(stderr, "L%u: usage: push integer\n", line_number);
+				free(buffer);
+				free_malloc(stack);
+				fclose(file);
+				return (EXIT_FAILURE);
+			}
+
+			push(&stack, atoi(command_f));
+			operation_successful = 1;
+		}
+		else if (strcmp(command_f, "pall") == 0)
+		{
+			pall(&stack, line_number);
+			operation_successful = 1;
+		}
+		else
+		{
+			functions_monty(&stack, command_f, line_number);
+			operation_successful = 1;
+		}
+
+		if (!operation_successful)
+		{
+			fprintf(stderr, "Error: Failed to execute operation at line %u\n", line_number);
+			free(buffer);
+			free_malloc(stack);
+			fclose(file);
+			return (EXIT_FAILURE);
+		}
 	}
+
 	free(buffer);
 	free_malloc(stack);
 	fclose(file);
-	if (var_glob[1] == 1)
-		exit(EXIT_FAILURE);
-	exit(EXIT_SUCCESS);
+	return (EXIT_SUCCESS);
 }
-
