@@ -59,7 +59,7 @@ void functions_monty(stack_t **stack, char *command_f, unsigned int line_numb)
 	}
 }
 /**
- * nop - doesn't do anything.
+ * nop - Used as a placeholder for future instructions.
  * @stack: pointer head stack.
  * @line_number: line number in file.
  * Return: void.
