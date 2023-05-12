@@ -1,51 +1,50 @@
 #include "monty.h"
 
 /**
- *lines_check - check line to arguments
- *@buffer: contain all
- *@line_number: count to lines inside the file
- *Return: Tokens
- */
+ *  *lines_check - check line to arguments
+ *   *@buffer: contain all
+ *    *@line_number: count to lines inside the file
+ *     *Return: Tokens
+ *      */
 
 char *lines_check(char *buffer, unsigned int line_number)
 {
 	char *token = NULL, *num_t = NULL;
-	long int i = 0;
+	
 
 	token = strtok(buffer, " \t\n");
+	if (token == NULL)
+		return (NULL);
 	if (strcmp(token, "push") == 0)
 	{
 		num_t = strtok(NULL, " \t\n");
-		if (num_t == NULL)
+		if (num_t == NULL || !is_numeric(num_t))
 		{
 			fprintf(stderr, "L%u: usage: push integer\n", line_number);
 			free(buffer);
 			var_glob[1] = 1;
 			return (NULL);
 		}
-		for (i = 0; num_t[i] != '\0'; i++)
+		errno = 0;
+		long int val = strtol(num_t, NULL, 10);
+		if (errno == ERANGE || val < INT_MIN || val > INT_MAX)
 		{
-			if (num_t[i] == '-')
-				i++;
-			if (num_t[i] < 48 || num_t[i] > 57)
-			{
-				fprintf(stderr, "L%u: usage: push integer\n", line_number);
-				free(buffer);
-				var_glob[1] = 1;
-				return (NULL);
-			}
+			fprintf(stderr, "L%u: integer out of range\n", line_number);
+			free(buffer);
+			var_glob[1] = 1;
+			return (NULL);
 		}
-		var_glob[0] = atoi(num_t);
+		var_glob[0] = (int)val;
 	}
 	return (token);
 }
 
 /**
- *main - execute the monty interpreter
- *@argc: count number to arguments per line
- *@argv: array to arguments
- *Return: 0 if no exist or exit failure in case to error
- */
+ *  *main - execute the monty interpreter
+ *   *@argc: count number to arguments per line
+ *    *@argv: array to arguments
+ *     *Return: 0 if no exist or exit failure in case to error
+ *      */
 
 int main(int argc, char *argv[])
 {
@@ -83,3 +82,4 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	exit(EXIT_SUCCESS);
 }
+
