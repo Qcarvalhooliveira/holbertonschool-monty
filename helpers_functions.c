@@ -1,5 +1,4 @@
 #include "monty.h"
-
 /**
  * pall - print all elements of stack.
  * @stack: pointer head stack.
@@ -17,51 +16,40 @@ void pall(stack_t **stack, unsigned int line_number)
 		h = h->next;
 	}
 }
+
 /**
- *  * push - function that adds a new node at the beginning of the stack
- *   * @stack: double pointer to the head of the stack
- *    * @line_number: script line number
- *     *
- *      * Return: nothing
- *       */
+ * push - Implement the pint opcode.
+ * @stack: pointer head stack.
+ * @line_number: line number in file.
+ * Return: nothing.
+ */
+
 void push(stack_t **stack, unsigned int line_number)
 {
-	stack_t *new_node;
-	char *command_arg;
+	stack_t *node = NULL;
+	stack_t *copy = *stack;
+	(void)line_number;
 
-	if (var_glob[0] != 1)
+	if (stack == NULL)
 	{
-		fprintf(stderr, "L%u: usage: push integer\n", line_number);
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "L%d: usage: push integer\n", line_number);
+		var_glob[1] = 1;
+		return;
 	}
-
-	new_node = malloc(sizeof(stack_t));
-	if (!new_node)
+	node = malloc(sizeof(stack_t));
+	if (node == NULL)
 	{
 		fprintf(stderr, "Error: malloc failed\n");
-		free_malloc(*stack);
-		exit(EXIT_FAILURE);
+		free(stack);
+		var_glob[1] = 1;
+		return;
 	}
-
-	command_arg = strtok(NULL, DELIM);
-	if (!is_numeric(command_arg))
-	{
-		fprintf(stderr, "L%u: usage: push integer\n", line_number);
-		free(new_node);
-		free_malloc(*stack);
-		exit(EXIT_FAILURE);
-	}
-
-	new_node->n = atoi(command_arg);
-	new_node->prev = NULL;
-	new_node->next = *stack;
-
-	if (*stack != NULL)
-		(*stack)->prev = new_node;
-
-	*stack = new_node;
-}
-
+	node->prev = NULL;
+	node->n = var_glob[0];
+	node->next = *stack;
+	if (*stack)
+		copy->prev = node;
+	*stack = node;
 }
 /**
  * pint - Implement the pint opcode.
@@ -116,16 +104,7 @@ void pop(stack_t **stack, unsigned int line_number)
 
 void swap(stack_t **stack, unsigned int line_number)
 {
-	int i, j = 0;fprintf(stderr, "L%u: can't pop an empty stack\n", line_number);
-exit(EXIT_FAILURE);
-}
-temp = *stack;
-*stack = (*stack)->next;
-if (*stack != NULL)
-(*stack)->prev = NULL;
-free(temp);
-}
-
+	int i, j = 0;
 	stack_t *copy_stack = *stack;
 
 	while (copy_stack != NULL)
