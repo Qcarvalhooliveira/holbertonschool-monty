@@ -116,7 +116,16 @@ void pop(stack_t **stack, unsigned int line_number)
 
 void swap(stack_t **stack, unsigned int line_number)
 {
-	int i, j = 0;
+	int i, j = 0;fprintf(stderr, "L%u: can't pop an empty stack\n", line_number);
+exit(EXIT_FAILURE);
+}
+temp = *stack;
+*stack = (*stack)->next;
+if (*stack != NULL)
+(*stack)->prev = NULL;
+free(temp);
+}
+
 	stack_t *copy_stack = *stack;
 
 	while (copy_stack != NULL)
