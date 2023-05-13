@@ -68,7 +68,6 @@ void pint(stack_t **stack, unsigned int line_number)
 	}
 	printf("%d\n", (*stack)->n);
 }
-
 /**
  * pop - remove a element to the top of stack.
  * @stack: pointer to head of stack.
@@ -78,21 +77,16 @@ void pint(stack_t **stack, unsigned int line_number)
 
 void pop(stack_t **stack, unsigned int line_number)
 {
-	stack_t *node = *stack;
-
-	if ((*stack) == NULL)
+	if (*stack == NULL)
 	{
-		fprintf(stderr, "L%d: can't pint, stack empty\n", line_number);
-		free(stack);
+		fprintf(stderr, "L%d: can't pop an empty stack\n", line_number);
 		var_glob[1] = 1;
 		return;
 	}
-	if (node)
-	{
 
-		*stack = (node)->next;
-		free(node);
-	}
+	stack_t *node = *stack;
+	*stack = node->next;
+	free(node);
 }
 
 /**
