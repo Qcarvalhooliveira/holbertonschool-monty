@@ -17,40 +17,51 @@ void pall(stack_t **stack, unsigned int line_number)
 		h = h->next;
 	}
 }
-
 /**
- * push - Implement the pint opcode.
- * @stack: pointer head stack.
- * @line_number: line number in file.
- * Return: nothing.
- */
-
+ *  * push - function that adds a new node at the beginning of the stack
+ *   * @stack: double pointer to the head of the stack
+ *    * @line_number: script line number
+ *     *
+ *      * Return: nothing
+ *       */
 void push(stack_t **stack, unsigned int line_number)
 {
-	stack_t *node = NULL;
-	stack_t *copy = *stack;
-	(void)line_number;
+	stack_t *new_node;
+	char *command_arg;
 
-	if (stack == NULL)
+	if (var_glob[0] != 1)
 	{
-		fprintf(stderr, "L%d: usage: push integer\n", line_number);
-		var_glob[1] = 1;
-		return;
+		fprintf(stderr, "L%u: usage: push integer\n", line_number);
+		exit(EXIT_FAILURE);
 	}
-	node = malloc(sizeof(stack_t));
-	if (node == NULL)
+
+	new_node = malloc(sizeof(stack_t));
+	if (!new_node)
 	{
 		fprintf(stderr, "Error: malloc failed\n");
-		free(stack);
-		var_glob[1] = 1;
-		return;
+		free_malloc(*stack);
+		exit(EXIT_FAILURE);
 	}
-	node->prev = NULL;
-	node->n = var_glob[0];
-	node->next = *stack;
-	if (*stack)
-		copy->prev = node;
-	*stack = node;
+
+	command_arg = strtok(NULL, DELIM);
+	if (!is_numeric(command_arg))
+	{
+		fprintf(stderr, "L%u: usage: push integer\n", line_number);
+		free(new_node);
+		free_malloc(*stack);
+		exit(EXIT_FAILURE);
+	}
+
+	new_node->n = atoi(command_arg);
+	new_node->prev = NULL;
+	new_node->next = *stack;
+
+	if (*stack != NULL)
+		(*stack)->prev = new_node;
+
+	*stack = new_node;
+}
+
 }
 /**
  * pint - Implement the pint opcode.
