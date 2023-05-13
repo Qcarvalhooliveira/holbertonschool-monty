@@ -88,32 +88,32 @@ void pop(stack_t **stack, unsigned int line_number)
 	*stack = node->next;
 	free(node);
 }
-
 /**
  * swap - swap two element in stack.
  * @stack: pointer to head of stack.
  * @line_number: files line number.
  * Return: void.
  */
-
 void swap(stack_t **stack, unsigned int line_number)
 {
-	int i, j = 0;
+	int i = 0, j;
 	stack_t *copy_stack = *stack;
 
-	while (copy_stack != NULL)
+	if (!copy_stack || !copy_stack->next)
+	{
+		fprintf(stderr, "L%u: can't swap, stack too short\n", line_number);
+		var_glob[1] = 1;
+		return;
+	}
+
+	while (copy_stack)
 	{
 		i++;
 		copy_stack = copy_stack->next;
 	}
-	if (i < 2)
-	{
-		fprintf(stderr, "L%u: can't swap, stack too short\n", line_number);
-		free(stack);
-		var_glob[1] = 1;
-		return;
-	}
+
 	j = (*stack)->n;
 	(*stack)->n = (*stack)->next->n;
 	(*stack)->next->n = j;
 }
+
