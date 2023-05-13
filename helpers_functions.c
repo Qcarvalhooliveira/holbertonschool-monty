@@ -82,19 +82,17 @@ void pop(stack_t **stack, unsigned int line_number)
 	stack_t *node = *stack;
 
 	if ((*stack) == NULL)
-	{
-		fprintf(stderr, "L%d: can't pint, stack empty\n", line_number);
-		free(stack);
-		var_glob[1] = 1;
-		return;
-	}
-	if (node)
-	{
-
-		*stack = (node)->next;
-		free(node);
-	}
+	{fprintf(stderr, "L%u: can't pop an empty stack\n", line_number);
+        exit(EXIT_FAILURE);
 }
+*node = *stack;
+*stack = (*stack)->next;
+if (*stack != NULL)
+(*stack)->prev = NULL;
+free(temp);
+}
+
+		
 
 /**
  * swap - swap two element in stack.
@@ -105,7 +103,16 @@ void pop(stack_t **stack, unsigned int line_number)
 
 void swap(stack_t **stack, unsigned int line_number)
 {
-	int i, j = 0;
+	int i, j = 0;fprintf(stderr, "L%u: can't pop an empty stack\n", line_number);
+exit(EXIT_FAILURE);
+}
+temp = *stack;
+*stack = (*stack)->next;
+if (*stack != NULL)
+(*stack)->prev = NULL;
+free(temp);
+}
+
 	stack_t *copy_stack = *stack;
 
 	while (copy_stack != NULL)
