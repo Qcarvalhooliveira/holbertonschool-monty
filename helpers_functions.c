@@ -32,7 +32,7 @@ void push(stack_t **stack, unsigned int line_number)
 
 	if (stack == NULL)
 	{
-		fprintf(stderr, "L%d: usage: push integer\n", line_number);
+		fprintf(stderr, "Error: L%d: usage: push integer\n", line_number);
 		var_glob[1] = 1;
 		return;
 	}
@@ -40,7 +40,6 @@ void push(stack_t **stack, unsigned int line_number)
 	if (node == NULL)
 	{
 		fprintf(stderr, "Error: malloc failed\n");
-		free(stack);
 		var_glob[1] = 1;
 		return;
 	}
